@@ -1,10 +1,15 @@
 # Uj's Aesthetics — cinematic landing page
 
 A premium, single-page site for a skin & aesthetics clinic in Bahria Town. The
-first half of the page is a **continuous walkthrough**: five clips of the clinic
-sit on one pinned stage and cross-dissolve into each other as you scroll, so the
-visitor feels they are walking from the reception, down the corridor, through the
-suites and out into the product gallery — without a single cut or page reload.
+whole page is a **continuous walkthrough**: clips of the clinic sit on one pinned
+stage and cross-dissolve into each other as you scroll, so the visitor never
+loses the building underneath them — no cuts, no page reloads.
+
+The walk is a round trip. You come in through the reception, go deeper —
+corridor, suites, product gallery, lounge — and then turn back, ending at the
+reception again for the booking section, which is exactly where a visitor would
+be standing when they ask for an appointment. The mapping lives in `SECTION_CLIPS`
+([src/lib/videos.ts](src/lib/videos.ts)).
 
 **Stack:** Next.js 15 (App Router) · React 19 · Tailwind CSS v4 · GSAP
 ScrollTrigger · Lenis · Motion (Framer Motion) · TypeScript.
@@ -49,9 +54,10 @@ crop is already the right shape.
 
 [`src/components/cinematic/CinematicJourney.tsx`](src/components/cinematic/CinematicJourney.tsx)
 
-- One `sticky` stage holds all five `<video>` elements, stacked. `sticky` is used
-  instead of a GSAP pin: it is cheaper, and it cannot introduce the layout shifts
-  a pin does.
+- One `sticky` stage holds a stacked `<video>` layer **per section** — clips
+  repeat on the way back out, and a repeat costs nothing, since the file is
+  already cached and only visible layers ever decode. `sticky` is used instead of
+  a GSAP pin: it is cheaper, and it cannot introduce the layout shifts a pin does.
 - Clip _i_ is stacked above clip _i−1_ and **dissolves in as its own section
   rises into view**. Because each fade is driven by its own section's position —
   not by a share of the total scroll — sections can be any height without

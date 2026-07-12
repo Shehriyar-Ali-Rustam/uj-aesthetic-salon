@@ -11,21 +11,19 @@ import { Contact } from "@/sections/Contact";
 export default function Home() {
   return (
     <main>
-      {/* The walkthrough: five sections, five clips, one continuous shot. */}
+      {/* One continuous walk: every section rides over the same video stage, so
+          the clinic never drops away underneath the visitor. The clips run
+          deeper into the building and then back out — see SECTION_CLIPS. */}
       <CinematicJourney>
         <Hero />
         <About />
         <Philosophy />
         <Treatments />
         <Technology />
+        <Experts />
+        <Testimonials />
+        <Contact />
       </CinematicJourney>
-
-      {/* Stepping out of the clinic, back into the light. */}
-      <div aria-hidden className="h-40 bg-gradient-to-b from-espresso to-cream" />
-
-      <Experts />
-      <Testimonials />
-      <Contact />
     </main>
   );
 }

@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { gsap, ScrollTrigger } from "@/animations/gsap";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useIsMobile, useReducedMotion } from "@/hooks/useMediaQuery";
-import { CLIPS } from "@/lib/videos";
+import { SECTION_CLIPS } from "@/lib/videos";
 import { smoothstep } from "@/lib/utils";
 
 /**
@@ -31,14 +31,14 @@ const PRELOAD_MARGIN = 1;
 export function CinematicJourney({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
-  const opacities = useRef<number[]>(CLIPS.map((_, i) => (i === 0 ? 1 : 0)));
+  const opacities = useRef<number[]>(SECTION_CLIPS.map((_, i) => (i === 0 ? 1 : 0)));
 
   const isMobile = useIsMobile();
   const reduced = useReducedMotion();
 
   /** Which clips have been given a src yet. Clip 1 loads immediately. */
   const [loaded, setLoaded] = useState<boolean[]>(() =>
-    CLIPS.map((_, i) => i === 0),
+    SECTION_CLIPS.map((_, i) => i === 0),
   );
 
   const requestLoad = useCallback((index: number) => {
@@ -74,7 +74,7 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
         const vh = window.innerHeight;
         const scrollY = window.scrollY;
 
-        for (let i = 0; i < CLIPS.length; i++) {
+        for (let i = 0; i < SECTION_CLIPS.length; i++) {
           const top = tops[i];
           const opacity =
             i === 0 || top === undefined
@@ -100,7 +100,7 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
        * journey has left the viewport.
        */
       const syncPlayback = () => {
-        for (let i = 0; i < CLIPS.length; i++) {
+        for (let i = 0; i < SECTION_CLIPS.length; i++) {
           const video = videoRefs.current[i];
           if (!video || !video.src) continue;
 
@@ -147,9 +147,11 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
       {/* The stage: pinned for the length of the journey by `sticky`, which is
           cheaper and steadier than a ScrollTrigger pin (no layout shifts). */}
       <div className="sticky top-0 h-svh w-full overflow-hidden">
-        {CLIPS.map((clip, i) => (
+        {SECTION_CLIPS.map((clip, i) => (
           <video
-            key={clip.id}
+            // One layer per section, not per clip — clips repeat on the way
+            // back out, so the section index is what identifies a layer.
+            key={i}
             ref={(el) => {
               videoRefs.current[i] = el;
             }}

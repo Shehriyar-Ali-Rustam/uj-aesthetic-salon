@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { JourneySection } from "@/components/cinematic/CinematicJourney";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { MaskedHeading } from "@/components/ui/MaskedHeading";
@@ -45,22 +46,22 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="grain relative bg-cream py-32 md:py-40">
-      <Container>
+    <JourneySection id="contact" scrim="center">
+      <Container className="py-32">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
           <div>
             <Reveal>
-              <Eyebrow>{CONTACT.eyebrow}</Eyebrow>
+              <Eyebrow tone="light">{CONTACT.eyebrow}</Eyebrow>
             </Reveal>
 
             <MaskedHeading
               lines={CONTACT.headline}
               accentLast
-              className="mt-7 text-[clamp(2.5rem,6vw,5rem)] text-espresso"
+              className="mt-7 text-[clamp(2.5rem,6vw,5rem)] text-ivory"
             />
 
             <Reveal variant="blur-in" delay={0.15}>
-              <p className="mt-8 max-w-md text-base leading-relaxed text-mocha">
+              <p className="mt-8 max-w-md text-base leading-relaxed text-ivory/70">
                 {CONTACT.body}
               </p>
             </Reveal>
@@ -78,7 +79,7 @@ export function Contact() {
           </div>
 
           <Reveal delay={0.1}>
-            <div className="rounded-3xl border border-espresso/8 bg-ivory p-8 shadow-[0_40px_100px_-60px_rgba(42,33,30,0.45)] md:p-12">
+            <div className="rounded-3xl border border-ivory/12 bg-espresso/60 p-8 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl md:p-12">
               {sent ? (
                 <Confirmation
                   handedOff={Boolean(CLINIC.whatsapp)}
@@ -116,27 +117,25 @@ export function Contact() {
           </Reveal>
         </div>
       </Container>
-    </section>
+    </JourneySection>
   );
 }
 
 function ContactDetail({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-t border-espresso/8 pt-5">
-      <p className="text-eyebrow text-gold-deep">{label}</p>
-      <p className="mt-3 whitespace-pre-line text-base text-espresso">
-        {value}
-      </p>
+    <div className="border-t border-ivory/12 pt-5">
+      <p className="text-eyebrow text-gold">{label}</p>
+      <p className="mt-3 text-base whitespace-pre-line text-ivory">{value}</p>
     </div>
   );
 }
 
 /** Shared underline-style input, in the house type. */
 const FIELD_CLASS =
-  "peer w-full border-b border-espresso/15 bg-transparent pt-6 pb-3 text-base text-espresso transition-colors duration-500 placeholder-shown:pt-6 focus:border-gold focus:outline-none";
+  "peer w-full border-b border-ivory/20 bg-transparent pt-6 pb-3 text-base text-ivory transition-colors duration-500 focus:border-gold focus:outline-none [color-scheme:dark]";
 
 const LABEL_CLASS =
-  "text-eyebrow absolute top-0 left-0 text-ash transition-colors duration-500 peer-focus:text-gold-deep";
+  "text-eyebrow absolute top-0 left-0 text-ivory/45 transition-colors duration-500 peer-focus:text-gold";
 
 function Field({
   name,
@@ -195,7 +194,11 @@ function SelectField({
         className={`${FIELD_CLASS} cursor-pointer appearance-none`}
       >
         {options.map((option) => (
-          <option key={option}>{option}</option>
+          // The dropdown itself is drawn by the OS — force it back to the
+          // clinic's palette so it doesn't flash white on a dark form.
+          <option key={option} className="bg-espresso text-ivory">
+            {option}
+          </option>
         ))}
       </select>
       <label htmlFor={name} className={LABEL_CLASS}>
@@ -223,10 +226,10 @@ function Confirmation({
       <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/40 text-xl text-gold">
         ✓
       </span>
-      <h3 className="mt-7 font-[family-name:var(--font-display)] text-2xl font-light text-espresso">
+      <h3 className="mt-7 font-[family-name:var(--font-display)] text-2xl font-light text-ivory">
         {handedOff ? "Opening WhatsApp…" : "Request noted."}
       </h3>
-      <p className="mt-4 max-w-xs text-sm leading-relaxed text-mocha">
+      <p className="mt-4 max-w-xs text-sm leading-relaxed text-ivory/65">
         {handedOff
           ? "Send the pre-filled message and we'll confirm your consultation within working hours."
           : "Demo mode — add the clinic's WhatsApp number in lib/content.ts to hand this off for real."}
@@ -234,7 +237,7 @@ function Confirmation({
       <button
         type="button"
         onClick={onReset}
-        className="text-eyebrow mt-8 text-gold-deep transition-transform duration-500 hover:translate-x-1"
+        className="text-eyebrow mt-8 text-gold transition-transform duration-500 hover:translate-x-1"
       >
         Send another →
       </button>
