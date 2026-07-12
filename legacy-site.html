@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uj's Aesthetics — Reveal your best skin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#F7F3EE;
+  --blush:#E7CFC5;
+  --gold:#C9A46A;
+  --gold-deep:#B08D52;
+  --plum:#3A2B2E;
+  --plum-soft:#6B5A5E;
+  --sage:#8FA79B;
+  --white:#FFFFFF;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Manrope', -apple-system, sans-serif;
+  --ease:cubic-bezier(.22,.61,.2,1);
+  --radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  font-family:var(--sans);
+  background:var(--ivory);
+  color:var(--plum);
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--gold);color:var(--white)}
+
+/* ---------- Preloader ---------- */
+#preloader{
+  position:fixed;inset:0;z-index:100;
+  background:var(--ivory);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  transition:opacity .7s var(--ease), visibility .7s;
+}
+#preloader.done{opacity:0;visibility:hidden}
+#preloader .mark{
+  font-family:var(--serif);font-weight:500;font-size:1.5rem;letter-spacing:.14em;color:var(--plum);
+}
+#preloader .mark em{font-style:italic;color:var(--gold)}
+.arc{width:52px;height:52px}
+.arc circle{
+  fill:none;stroke:var(--gold);stroke-width:1.5;stroke-linecap:round;
+  stroke-dasharray:150;stroke-dashoffset:150;
+  transform-origin:center;
+  animation:arcfill 1.4s var(--ease) forwards, arcspin 1.6s linear infinite;
+}
+@keyframes arcfill{to{stroke-dashoffset:30}}
+@keyframes arcspin{to{transform:rotate(360deg)}}
+
+/* ---------- 3D canvas ---------- */
+#glow{
+  position:fixed;inset:0;z-index:0;
+  width:100%;height:100%;
+  pointer-events:none;
+}
+body.no3d #glow{display:none}
+body.no3d .hero{
+  background:
+    radial-gradient(60% 55% at 68% 42%, rgba(231,207,197,.85), transparent 70%),
+    radial-gradient(45% 40% at 72% 45%, rgba(201,164,106,.30), transparent 70%),
+    radial-gradient(50% 45% at 62% 50%, rgba(143,167,155,.22), transparent 72%);
+}
+
+/* ---------- Layout helpers ---------- */
+.wrap{position:relative;z-index:1}
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+section{padding:110px 0;position:relative}
+.eyebrow{
+  font-size:.72rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold-deep);margin-bottom:18px;display:inline-flex;align-items:center;gap:12px;
+}
+.eyebrow::before{content:'';width:26px;height:1px;background:var(--gold)}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.12;color:var(--plum)}
+h2{font-size:clamp(2rem,4.4vw,3.1rem);letter-spacing:.01em;margin-bottom:20px}
+h2 em{font-style:italic;color:var(--gold-deep)}
+.lead{font-size:1.06rem;color:var(--plum-soft);max-width:56ch;font-weight:400}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ---------- Nav ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  transition:background .4s,box-shadow .4s,backdrop-filter .4s;
+}
+header.scrolled{
+  background:rgba(247,243,238,.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 rgba(201,164,106,.18);
+}
+.nav{
+  max-width:1240px;margin:0 auto;padding:20px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.logo{font-family:var(--serif);font-size:1.28rem;letter-spacing:.06em;color:var(--plum);text-decoration:none;white-space:nowrap}
+.logo em{font-style:italic;color:var(--gold-deep)}
+.nav-links{display:flex;align-items:center;gap:34px;list-style:none}
+.nav-links a{
+  color:var(--plum-soft);text-decoration:none;font-size:.9rem;font-weight:500;letter-spacing:.04em;
+  position:relative;padding:4px 0;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--gold);
+  transition:width .35s var(--ease);
+}
+.nav-links a:hover{color:var(--plum)}
+.nav-links a:hover::after{width:100%}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--sans);font-weight:600;font-size:.9rem;letter-spacing:.05em;
+  padding:14px 30px;border-radius:999px;text-decoration:none;cursor:pointer;border:none;
+  position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s;
+}
+.btn:focus-visible,.nav-links a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--gold-deep);outline-offset:3px;
+}
+.btn-gold{
+  background:linear-gradient(120deg,var(--gold) 0%,#D8B57E 55%,var(--gold) 100%);
+  color:var(--white);box-shadow:0 8px 26px rgba(201,164,106,.38);
+}
+.btn-gold::after{
+  content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-18deg);transition:left .6s var(--ease);
+}
+.btn-gold:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 34px rgba(201,164,106,.5)}
+.btn-gold:hover::after{left:130%}
+.btn-ghost{
+  background:transparent;color:var(--plum);
+  box-shadow:inset 0 0 0 1.5px rgba(58,43,46,.28);
+}
+.btn-ghost:hover{box-shadow:inset 0 0 0 1.5px var(--gold);color:var(--gold-deep);transform:translateY(-2px)}
+.btn-sm{padding:11px 24px;font-size:.84rem}
+
+/* ---------- Hero ---------- */
+.hero{
+  min-height:100svh;display:flex;align-items:center;
+  padding:140px 0 90px;
+}
+.hero-inner{max-width:1240px;margin:0 auto;padding:0 28px;width:100%}
+.hero h1{
+  font-size:clamp(2.7rem,6.4vw,5rem);font-weight:400;letter-spacing:.005em;max-width:12ch;
+}
+.hero h1 em{font-style:italic;color:var(--gold-deep)}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(.6em);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+body.loaded .hero h1 .w{opacity:1;transform:none}
+.hero-sub{
+  margin:26px 0 40px;font-size:1.08rem;color:var(--plum-soft);max-width:46ch;
+  opacity:0;transform:translateY(20px);transition:opacity .9s var(--ease) .55s,transform .9s var(--ease) .55s;
+}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap;
+  opacity:0;transform:translateY(20px);transition:opacity .9s var(--ease) .75s,transform .9s var(--ease) .75s;
+}
+body.loaded .hero-sub,body.loaded .hero-ctas{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .hero h1 .w,.hero-sub,.hero-ctas{opacity:1;transform:none;transition:none}
+}
+.scroll-cue{
+  position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:var(--plum-soft);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+}
+.scroll-cue span{display:block;width:1px;height:42px;background:linear-gradient(var(--gold),transparent);
+  animation:breathe 2.4s ease-in-out infinite;transform-origin:top}
+@keyframes fadein{to{opacity:1}}
+@keyframes breathe{0%,100%{transform:scaleY(.4);opacity:.5}50%{transform:scaleY(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.scroll-cue span{animation:none}}
+
+/* ---------- Intro ---------- */
+.intro{padding-top:40px}
+.intro-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center}
+.proofline{
+  margin-top:34px;display:flex;flex-wrap:wrap;gap:12px 28px;
+  font-size:.86rem;font-weight:600;letter-spacing:.06em;color:var(--gold-deep);
+}
+.proofline li{list-style:none;display:flex;align-items:center;gap:9px}
+.proofline li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sage)}
+.intro-card{
+  background:linear-gradient(160deg,rgba(255,255,255,.75),rgba(231,207,197,.35));
+  border:1px solid rgba(201,164,106,.28);border-radius:var(--radius);
+  padding:40px 38px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 24px 60px rgba(58,43,46,.08);
+}
+.intro-card p{font-family:var(--serif);font-size:1.3rem;line-height:1.5;color:var(--plum)}
+.intro-card cite{display:block;margin-top:18px;font-family:var(--sans);font-style:normal;font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep)}
+
+/* ---------- Treatments ---------- */
+.treatments{background:linear-gradient(180deg,transparent, rgba(231,207,197,.22) 30%, rgba(231,207,197,.22) 70%, transparent)}
+.t-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:54px}
+.t-card{
+  background:rgba(255,255,255,.6);
+  border:1px solid rgba(201,164,106,.22);
+  border-radius:var(--radius);padding:34px 26px 30px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s;
+  position:relative;overflow:hidden;
+}
+.t-card:hover{transform:translateY(-7px);box-shadow:0 26px 50px rgba(58,43,46,.12);border-color:rgba(201,164,106,.55)}
+.t-ico{
+  width:52px;height:52px;border-radius:16px;display:grid;place-items:center;margin-bottom:20px;
+  background:radial-gradient(circle at 30% 25%, #fff, var(--blush));
+  box-shadow:inset 0 0 0 1px rgba(201,164,106,.35), 0 8px 20px rgba(201,164,106,.22);
+  color:var(--gold-deep);
+}
+.t-ico svg{width:24px;height:24px}
+.t-card h3{font-size:1.16rem;margin-bottom:10px}
+.t-card p{font-size:.9rem;color:var(--plum-soft)}
+.t-card a{
+  display:inline-block;margin-top:16px;font-size:.82rem;font-weight:700;letter-spacing:.08em;
+  color:var(--gold-deep);text-decoration:none;position:relative;
+}
+.t-card a::after{content:'';position:absolute;left:0;bottom:-3px;height:1px;width:0;background:var(--gold);transition:width .35s var(--ease)}
+.t-card a:hover::after{width:100%}
+
+/* ---------- Before / After ---------- */
+.results-head{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap}
+.ba-note{font-size:.8rem;color:var(--plum-soft);letter-spacing:.04em}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:44px}
+.ba{
+  position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;
+  box-shadow:0 26px 60px rgba(58,43,46,.14);user-select:none;touch-action:none;cursor:ew-resize;
+  border:1px solid rgba(201,164,106,.3);
+}
+.ba .layer{position:absolute;inset:0;display:grid;place-items:center}
+.ba .after{clip-path:inset(0 0 0 50%)}
+.ba .tag{
+  position:absolute;top:14px;font-size:.66rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.75);color:var(--plum);backdrop-filter:blur(6px);
+}
+.ba .tag.l{left:14px}.ba .tag.r{right:14px}
+.ba .ph{
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(58,43,46,.55);
+  border:1px dashed rgba(58,43,46,.3);padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.35);
+  text-align:center;line-height:1.5;
+}
+.ba .handle{
+  position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--white);
+  box-shadow:0 0 0 1px rgba(58,43,46,.12), 0 0 24px rgba(255,255,255,.9);
+}
+.ba .knob{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 8px 24px rgba(58,43,46,.25);
+  display:grid;place-items:center;color:var(--gold-deep);
+}
+.ba .sweep{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
+  transform:translateX(-120%);
+}
+.ba.in .sweep{transition:transform 1.4s var(--ease) .2s;transform:translateX(120%)}
+.ba-caption{margin-top:12px;font-size:.85rem;color:var(--plum-soft)}
+
+/* ---------- Why / counters ---------- */
+.why{background:linear-gradient(180deg,transparent,rgba(143,167,155,.14) 35%,rgba(143,167,155,.14) 70%,transparent)}
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:50px}
+.why-card{
+  background:rgba(255,255,255,.62);border:1px solid rgba(143,167,155,.35);border-radius:var(--radius);
+  padding:30px 26px;backdrop-filter:blur(8px);
+}
+.why-card h3{font-size:1.05rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.why-card h3 svg{width:20px;height:20px;color:var(--sage);flex:none}
+.why-card p{font-size:.88rem;color:var(--plum-soft)}
+.counters{display:flex;gap:64px;flex-wrap:wrap;margin-top:58px;align-items:end}
+.counter .num{font-family:var(--serif);font-size:clamp(2.4rem,4.6vw,3.4rem);color:var(--plum);line-height:1}
+.counter .num b{font-weight:400;color:var(--gold-deep)}
+.counter .lbl{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--plum-soft);margin-top:8px}
+.counters-note{width:100%;font-size:.72rem;color:rgba(107,90,94,.7);letter-spacing:.04em;margin-top:6px}
+
+/* ---------- Specialist ---------- */
+.spec-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:center}
+.portrait{
+  aspect-ratio:4/5;border-radius:calc(var(--radius) + 8px);overflow:hidden;position:relative;
+  background:
+    radial-gradient(70% 55% at 50% 32%, #fff, transparent 70%),
+    linear-gradient(165deg,var(--blush),#DDBFB2 60%, var(--gold) 160%);
+  box-shadow:0 30px 70px rgba(58,43,46,.16);
+  display:grid;place-items:center;border:1px solid rgba(201,164,106,.35);
+}
+.portrait .ph{
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(58,43,46,.55);
+  border:1px dashed rgba(58,43,46,.3);padding:12px 18px;border-radius:12px;background:rgba(255,255,255,.4);
+  text-align:center;line-height:1.6;
+}
+.creds{margin:26px 0 0;display:grid;gap:12px}
+.creds li{list-style:none;display:flex;gap:12px;align-items:start;font-size:.94rem;color:var(--plum-soft)}
+.creds svg{width:18px;height:18px;color:var(--gold-deep);flex:none;margin-top:3px}
+
+/* ---------- Testimonials ---------- */
+.testi{overflow:hidden}
+.testi-stage{position:relative;max-width:760px;margin:44px auto 0;min-height:240px}
+.quote{
+  position:absolute;inset:0;text-align:center;padding:0 10px;
+  opacity:0;transform:translateY(16px);transition:opacity .8s var(--ease),transform .8s var(--ease);
+  pointer-events:none;
+}
+.quote.on{opacity:1;transform:none;pointer-events:auto}
+.stars{color:var(--gold);letter-spacing:.2em;font-size:1rem;margin-bottom:18px}
+.quote p{font-family:var(--serif);font-size:clamp(1.2rem,2.4vw,1.55rem);line-height:1.5;color:var(--plum)}
+.quote cite{display:block;margin-top:20px;font-style:normal;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep)}
+.dots{display:flex;gap:10px;justify-content:center;margin-top:26px}
+.dots button{
+  width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(58,43,46,.2);transition:background .3s,transform .3s;padding:0;
+}
+.dots button.on{background:var(--gold);transform:scale(1.35)}
+.testi-note{text-align:center;font-size:.72rem;color:rgba(107,90,94,.7);margin-top:20px;letter-spacing:.04em}
+
+/* ---------- Booking ---------- */
+.booking{padding-bottom:130px}
+.book-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;margin-top:50px;align-items:start}
+.form-card{
+  background:rgba(255,255,255,.72);border:1px solid rgba(201,164,106,.3);border-radius:calc(var(--radius) + 6px);
+  padding:42px 40px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 30px 70px rgba(58,43,46,.12);
+}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--plum-soft);margin-bottom:8px}
+.field input,.field select,.field textarea{
+  width:100%;padding:14px 16px;border-radius:14px;border:1px solid rgba(58,43,46,.16);
+  background:rgba(255,255,255,.85);font-family:var(--sans);font-size:.95rem;color:var(--plum);
+  transition:border-color .3s,box-shadow .3s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,164,106,.18);outline:none;
+}
+.field textarea{resize:vertical;min-height:96px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-msg{margin-top:18px;font-size:.9rem;color:var(--sage);display:none}
+.form-msg.show{display:block}
+.contact-card{display:grid;gap:22px}
+.c-item{
+  display:flex;gap:16px;align-items:start;
+  background:rgba(255,255,255,.55);border:1px solid rgba(201,164,106,.22);border-radius:var(--radius);padding:22px 24px;
+}
+.c-item svg{width:22px;height:22px;color:var(--gold-deep);flex:none;margin-top:2px}
+.c-item h4{font-family:var(--sans);font-size:.8rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--plum-soft);margin-bottom:4px}
+.c-item p{font-size:.95rem;color:var(--plum)}
+.c-item p .slot{color:rgba(107,90,94,.65);font-style:italic}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid rgba(201,164,106,.3);
+  background:linear-gradient(180deg,transparent,rgba(231,207,197,.25));
+  padding:60px 0 40px;position:relative;z-index:1;
+}
+.f-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:44px}
+.f-grid h4{font-family:var(--sans);font-size:.78rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--plum-soft);margin-bottom:16px}
+.f-grid ul{list-style:none;display:grid;gap:10px}
+.f-grid a{color:var(--plum-soft);text-decoration:none;font-size:.92rem;position:relative}
+.f-grid a:hover{color:var(--gold-deep)}
+.f-brand p{font-size:.92rem;color:var(--plum-soft);max-width:36ch;margin-top:14px}
+.f-bottom{
+  margin-top:48px;padding-top:24px;border-top:1px solid rgba(201,164,106,.25);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-size:.78rem;color:rgba(107,90,94,.75);
+}
+
+/* ---------- Floating mobile bar ---------- */
+.float-bar{
+  position:fixed;left:14px;right:14px;bottom:14px;z-index:60;
+  display:none;gap:10px;
+}
+.float-bar .btn{flex:1;box-shadow:0 14px 34px rgba(58,43,46,.28)}
+.float-wa{
+  background:#f2faf5;color:#1d5c3e;box-shadow:inset 0 0 0 1.5px rgba(143,167,155,.7), 0 14px 34px rgba(58,43,46,.18) !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1020px){
+  .t-grid{grid-template-columns:repeat(2,1fr)}
+  .why-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:860px){
+  section{padding:80px 0}
+  .nav-links li.link{display:none}
+  .intro-grid,.spec-grid,.book-grid{grid-template-columns:1fr;gap:44px}
+  .ba-grid{grid-template-columns:1fr}
+  .f-grid{grid-template-columns:1fr 1fr}
+  .float-bar{display:flex}
+  .booking{padding-bottom:170px}
+  footer{padding-bottom:110px}
+}
+@media (max-width:560px){
+  .t-grid,.why-grid,.f-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .counters{gap:34px}
+  .hero{padding-top:120px}
+}
+</style>
+</head>
+<body>
+
+<!-- Preloader -->
+<div id="preloader" aria-hidden="true">
+  <svg class="arc" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23"/></svg>
+  <div class="mark">Uj's <em>Aesthetics</em></div>
+</div>
+
+<!-- Fixed 3D layer -->
+<canvas id="glow" aria-hidden="true"></canvas>
+
+<!-- Nav -->
+<header id="hdr">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top">Uj's <em>Aesthetics</em></a>
+    <ul class="nav-links">
+      <li class="link"><a href="#treatments">Treatments</a></li>
+      <li class="link"><a href="#results">Results</a></li>
+      <li class="link"><a href="#about">About</a></li>
+      <li class="link"><a href="#contact">Contact</a></li>
+      <li><a class="btn btn-gold btn-sm" href="#book">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="wrap" id="top">
+
+  <!-- HERO -->
+  <section class="hero" id="hero" aria-label="Welcome">
+    <div class="hero-inner">
+      <p class="eyebrow" style="opacity:0;animation:fadein .8s .3s forwards">Skin &amp; Aesthetics · Bahria Town</p>
+      <h1 aria-label="Reveal your best skin.">
+        <span class="w" style="transition-delay:.15s">Reveal</span>
+        <span class="w" style="transition-delay:.27s">your</span>
+        <span class="w" style="transition-delay:.39s"><em>best</em></span>
+        <span class="w" style="transition-delay:.51s">skin.</span>
+      </h1>
+      <p class="hero-sub">Advanced skin &amp; aesthetic treatments in Bahria Town — where science meets artistry, and every plan is made for your skin alone.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" href="#book">Book a Consultation</a>
+        <a class="btn btn-ghost" href="#treatments">Explore Treatments</a>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true">Scroll<span></span></div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="intro" id="about">
+    <div class="container intro-grid">
+      <div>
+        <p class="eyebrow rv">Our promise</p>
+        <h2 class="rv d1">Science, artistry, and <em>honest</em> results.</h2>
+        <p class="lead rv d2">At Uj's Aesthetics we pair evidence-based dermatological care with an artist's eye. Treatments are planned around your skin, your goals, and your comfort — with safety and natural-looking results first, always.</p>
+        <ul class="proofline rv d3">
+          <li>Certified specialists</li>
+          <li>Advanced technology</li>
+          <li>Personalised plans</li>
+        </ul>
+      </div>
+      <div class="intro-card rv d2">
+        <p>"True beauty isn't changed — it's revealed. Our work is simply to bring yours to light."</p>
+        <cite>The Uj's Aesthetics philosophy</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREATMENTS -->
+  <section class="treatments" id="treatments">
+    <div class="container">
+      <p class="eyebrow rv">Signature treatments</p>
+      <h2 class="rv d1">Made for <em>your</em> skin.</h2>
+      <p class="lead rv d2">Every journey begins with a consultation — your specialist maps a plan across these pillars of care.</p>
+      <div class="t-grid">
+        <article class="t-card rv">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 3c3.5 4.5 6 7.6 6 11a6 6 0 1 1-12 0c0-3.4 2.5-6.5 6-11z"/></svg></div>
+          <h3>HydraFacial &amp; Glow Facials</h3>
+          <p>Deep-cleanse, hydrate and illuminate in one relaxing session — instant dewy glow, zero downtime.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d1">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20 20 4M14 4h6v6"/></svg></div>
+          <h3>Laser Hair Removal</h3>
+          <p>Smooth, lasting results with medical-grade lasers, calibrated safely for South Asian skin tones.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d2">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg></div>
+          <h3>Skin Brightening &amp; Drips</h3>
+          <p>Glutathione and vitamin infusions that support a clearer, more even and radiant complexion.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d3">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 21c-5 0-8-3.6-8-8 0-5 4-9 8-9s8 4 8 9c0 4.4-3 8-8 8z"/><path d="M9 12c.8 1 1.8 1.5 3 1.5s2.2-.5 3-1.5"/></svg></div>
+          <h3>Anti-Ageing — Botox &amp; Fillers</h3>
+          <p>Subtle, precise enhancement that softens lines and restores volume — you, only rested.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 18 18 6M8 6h.01M12 8h.01M6 10h.01M16 12h.01M12 16h.01M18 14h.01"/></svg></div>
+          <h3>Microneedling &amp; PRP</h3>
+          <p>Collagen-boosting renewal for texture, scars and overall firmness — powered by your own biology.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d1">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 3h10l-2 8c2 .8 3 2.4 3 4.5A5.5 5.5 0 0 1 12.5 21h-1A5.5 5.5 0 0 1 6 15.5C6 13.4 7 11.8 9 11L7 3z"/></svg></div>
+          <h3>Chemical Peels &amp; Acne Care</h3>
+          <p>Clinically guided peels and regimens that calm breakouts and refine tone and texture.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d2">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 14c1-2.5 2.2-4 4-4s3 1.5 4 4"/></svg></div>
+          <h3>Pigmentation &amp; Melasma</h3>
+          <p>Targeted protocols for stubborn pigmentation — patient, safe, and built for lasting evenness.</p>
+          <a href="#book">Learn more</a>
+        </article>
+        <article class="t-card rv d3">
+          <div class="t-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20c2-6 5-9 8-9s6 3 8 9M9 6c.5-1.5 1.6-2.5 3-2.5S14.5 4.5 15 6"/></svg></div>
+          <h3>Hair Restoration</h3>
+          <p>PRP and medical therapies to strengthen, thicken and restore confidence at the root.</p>
+          <a href="#book">Learn more</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div class="container">
+      <div class="results-head">
+        <div>
+          <p class="eyebrow rv">Before &amp; after</p>
+          <h2 class="rv d1">Real results, <em>real</em> people.</h2>
+        </div>
+        <p class="ba-note rv d2">Drag the handle to compare. Individual results vary.</p>
+      </div>
+      <div class="ba-grid">
+        <div>
+          <div class="ba rv" data-ba role="slider" aria-label="Before and after comparison — glow facial" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+            <div class="layer before" style="background:linear-gradient(150deg,#E3C4B6,#D3AC9C 60%,#C79E8E)"><span class="ph">Placeholder<br>Consented "before" photo</span></div>
+            <div class="layer after" style="background:linear-gradient(150deg,#F6E4D9,#EFD2C2 55%,#E9C6B4)"><span class="ph">Placeholder<br>Consented "after" photo</span></div>
+            <span class="tag l">Before</span><span class="tag r">After</span>
+            <div class="handle"><div class="knob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 7l-4 5 4 5M16 7l4 5-4 5"/></svg></div></div>
+            <div class="sweep"></div>
+          </div>
+          <p class="ba-caption">Glow facial course · 6 weeks</p>
+        </div>
+        <div>
+          <div class="ba rv d1" data-ba role="slider" aria-label="Before and after comparison — pigmentation care" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+            <div class="layer before" style="background:linear-gradient(150deg,#DCBBA8,#C9A08C 60%,#BD9480)"><span class="ph">Placeholder<br>Consented "before" photo</span></div>
+            <div class="layer after" style="background:linear-gradient(150deg,#F4E0D3,#ECCDBB 55%,#E5C1AC)"><span class="ph">Placeholder<br>Consented "after" photo</span></div>
+            <span class="tag l">Before</span><span class="tag r">After</span>
+            <div class="handle"><div class="knob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 7l-4 5 4 5M16 7l4 5-4 5"/></svg></div></div>
+            <div class="sweep"></div>
+          </div>
+          <p class="ba-caption">Pigmentation protocol · 3 months</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="why">
+    <div class="container">
+      <p class="eyebrow rv">Why Uj's Aesthetics</p>
+      <h2 class="rv d1">Care you can <em>trust</em>.</h2>
+      <div class="why-grid">
+        <div class="why-card rv"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>Certified specialists</h3><p>Qualified, experienced hands guiding every treatment and plan.</p></div>
+        <div class="why-card rv d1"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v4M5 8l2.5 2.5M19 8l-2.5 2.5M4 21h16M6 21c0-5 2.5-8 6-8s6 3 6 8"/></svg>Clinical hygiene</h3><p>Hospital-grade sterilisation and single-use consumables, always.</p></div>
+        <div class="why-card rv d2"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="5" width="16" height="12" rx="2"/><path d="M9 21h6M12 17v4"/></svg>Latest equipment</h3><p>Modern, calibrated devices for precision, comfort and safety.</p></div>
+        <div class="why-card rv d3"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Tailored plans</h3><p>No copy-paste routines — your skin sets the course, not a menu.</p></div>
+      </div>
+      <div class="counters">
+        <div class="counter rv"><div class="num"><span data-count="1000">0</span><b>+</b></div><div class="lbl">Happy clients</div></div>
+        <div class="counter rv d1"><div class="num"><span data-count="8">0</span><b>+</b></div><div class="lbl">Years of care</div></div>
+        <div class="counter rv d2"><div class="num"><span data-count="20">0</span><b>+</b></div><div class="lbl">Treatments offered</div></div>
+        <p class="counters-note rv d3">Illustrative figures — replace with the clinic's real numbers in CONFIG.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIALIST -->
+  <section id="specialist">
+    <div class="container spec-grid">
+      <div class="portrait rv"><span class="ph">Placeholder<br>Specialist portrait<br>(client to supply)</span></div>
+      <div>
+        <p class="eyebrow rv">Meet the specialist</p>
+        <h2 class="rv d1">In <em>careful</em> hands.</h2>
+        <p class="lead rv d2">[DOCTOR NAME], [credentials — e.g. MBBS, Dip. Aesthetic Medicine], leads every consultation personally — listening first, then designing a plan that respects both your skin and your time.</p>
+        <ul class="creds rv d3">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>[Certification / diploma — edit]</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>[Years of experience / affiliations — edit]</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>[Special interest, e.g. pigmentation in South Asian skin — edit]</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testi">
+    <div class="container">
+      <p class="eyebrow rv" style="justify-content:center;display:flex">Kind words</p>
+      <h2 class="rv d1" style="text-align:center">Loved in <em>Bahria Town</em>.</h2>
+      <div class="testi-stage" id="testiStage" aria-live="polite">
+        <blockquote class="quote on"><div class="stars" aria-label="5 stars">★★★★★</div><p>"Sample review — the HydraFacial left my skin glowing for weeks. The clinic feels calm, spotless and genuinely caring."</p><cite>A. K. · Bahria Town</cite></blockquote>
+        <blockquote class="quote"><div class="stars" aria-label="5 stars">★★★★★</div><p>"Sample review — honest advice, no upselling. My pigmentation plan was explained step by step and it worked."</p><cite>S. R. · Rawalpindi</cite></blockquote>
+        <blockquote class="quote"><div class="stars" aria-label="5 stars">★★★★★</div><p>"Sample review — professional, gentle and precise. The most comfortable laser sessions I've had anywhere."</p><cite>M. T. · Islamabad</cite></blockquote>
+      </div>
+      <div class="dots" id="testiDots" role="tablist" aria-label="Testimonials"></div>
+      <p class="testi-note">Sample testimonials — replace with real, consented client reviews.</p>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="booking" id="book">
+    <div class="container">
+      <p class="eyebrow rv">Book a consultation</p>
+      <h2 class="rv d1">Ready to <em>glow?</em></h2>
+      <p class="lead rv d2">Tell us a little about you — we'll confirm your consultation on WhatsApp within working hours.</p>
+      <div class="book-grid" id="contact">
+        <form class="form-card rv" id="bookForm" novalidate>
+          <div class="form-row">
+            <div class="field"><label for="fName">Name</label><input id="fName" name="name" type="text" autocomplete="name" required placeholder="Your name"></div>
+            <div class="field"><label for="fPhone">Phone / WhatsApp</label><input id="fPhone" name="phone" type="tel" autocomplete="tel" required placeholder="03xx xxxxxxx"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="fTreat">Treatment</label>
+              <select id="fTreat" name="treatment">
+                <option>General consultation</option>
+                <option>HydraFacial / Glow Facial</option>
+                <option>Laser Hair Removal</option>
+                <option>Skin Brightening / Drips</option>
+                <option>Botox &amp; Fillers</option>
+                <option>Microneedling &amp; PRP</option>
+                <option>Chemical Peel / Acne Care</option>
+                <option>Pigmentation &amp; Melasma</option>
+                <option>Hair Restoration</option>
+              </select>
+            </div>
+            <div class="field"><label for="fDate">Preferred date</label><input id="fDate" name="date" type="date"></div>
+          </div>
+          <div class="field"><label for="fMsg">Message <span style="text-transform:none;letter-spacing:0;font-weight:400">(optional)</span></label><textarea id="fMsg" name="message" placeholder="Anything you'd like us to know"></textarea></div>
+          <button class="btn btn-gold" type="submit" style="width:100%">Book on WhatsApp</button>
+          <p class="form-msg" id="formMsg" role="status"></p>
+        </form>
+        <div class="contact-card rv d1">
+          <div class="c-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M21 16.5v3a2 2 0 0 1-2.2 2A19 19 0 0 1 2.5 5.2 2 2 0 0 1 4.5 3h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.68 2.8a2 2 0 0 1-.45 2.1L8.6 10.7a16 16 0 0 0 4.7 4.7l1.1-1.13a2 2 0 0 1 2.1-.45c.9.32 1.84.55 2.8.68a2 2 0 0 1 1.7 2z"/></svg>
+            <div><h4>Call / WhatsApp</h4><p><span class="slot">[Add clinic number]</span></p></div></div>
+          <div class="c-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <div><h4>Visit us</h4><p><span class="slot">[Plaza / street address]</span>, Bahria Town, <span class="slot">[City]</span></p></div></div>
+          <div class="c-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg>
+            <div><h4>Hours</h4><p>Mon – Sat · <span class="slot">[11:00 – 20:00]</span><br>Friday break &amp; Sunday — <span class="slot">[edit]</span></p></div></div>
+          <div class="c-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".8" fill="currentColor" stroke="none"/></svg>
+            <div><h4>Instagram</h4><p><span class="slot">[@ujsaesthetics — edit]</span></p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="f-grid">
+      <div class="f-brand">
+        <a class="logo" href="#top">Uj's <em>Aesthetics</em></a>
+        <p>A boutique skin &amp; aesthetics clinic in Bahria Town — where science meets artistry.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul><li><a href="#treatments">Treatments</a></li><li><a href="#results">Results</a></li><li><a href="#specialist">Specialist</a></li><li><a href="#book">Book</a></li></ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#contact">[Phone — edit]</a></li>
+          <li><a href="#contact">[Email — edit]</a></li>
+          <li><a href="#contact">Bahria Town, [City]</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© <span id="yr"></span> Uj's Aesthetics. All rights reserved.</span>
+      <span>Results vary by individual. Consultation required for all medical treatments.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating mobile CTA -->
+<div class="float-bar">
+  <a class="btn float-wa" id="floatWa" href="#book" aria-label="WhatsApp us">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12a9 9 0 0 1-13 8L3 21l1-4.7A9 9 0 1 1 21 12z"/><path d="M8.5 9.5c.3 2.5 3.5 5.7 6 6l1.5-1.5-2-1-1 .5c-.8-.4-1.6-1.2-2-2l.5-1-1-2-2 1z"/></svg>
+    WhatsApp
+  </a>
+  <a class="btn btn-gold" href="#book">Book Now</a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================
+   CONFIG — edit brand details here
+   ============================================================ */
+const CONFIG = {
+  whatsapp: "",            // e.g. "923001234567" (country code, no +). Empty = demo success state.
+  clinicName: "Uj's Aesthetics",
+  stats: { clients: 1000, years: 8, treatments: 20 }, // PLACEHOLDER figures — set real values
+};
+
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = matchMedia('(max-width: 860px)').matches;
+
+/* ---------- Preloader / load-in ---------- */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('preloader').classList.add('done');
+    document.body.classList.add('loaded');
+  }, prefersReduced ? 100 : 900);
+});
+
+/* ---------- Nav scrolled state ---------- */
+const hdr = document.getElementById('hdr');
+addEventListener('scroll', () => hdr.classList.toggle('scrolled', scrollY > 30), {passive:true});
+
+/* ---------- Reveal on scroll ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv,.ba').forEach(el => io.observe(el));
+
+/* ---------- Counters ---------- */
+document.querySelectorAll('[data-count]').forEach((el,i) => {
+  const targets = [CONFIG.stats.clients, CONFIG.stats.years, CONFIG.stats.treatments];
+  el.dataset.count = targets[i] ?? el.dataset.count;
+});
+const cio = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, end = +el.dataset.count, t0 = performance.now(), dur = prefersReduced ? 1 : 1600;
+  (function tick(t){
+    const p = Math.min(1,(t-t0)/dur), ease = 1-Math.pow(1-p,3);
+    el.textContent = Math.round(end*ease).toLocaleString();
+    if (p<1) requestAnimationFrame(tick);
+  })(t0);
+  cio.unobserve(el);
+}), {threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+
+/* ---------- Before / After drag ---------- */
+document.querySelectorAll('[data-ba]').forEach(ba => {
+  const after = ba.querySelector('.after'), handle = ba.querySelector('.handle');
+  let pct = 50;
+  const set = v => {
+    pct = Math.max(2, Math.min(98, v));
+    after.style.clipPath = `inset(0 0 0 ${pct}%)`;
+    handle.style.left = pct + '%';
+    ba.setAttribute('aria-valuenow', Math.round(pct));
+  };
+  const fromEvent = e => set(((e.clientX ?? e.touches?.[0]?.clientX) - ba.getBoundingClientRect().left) / ba.offsetWidth * 100);
+  let drag = false;
+  ba.addEventListener('pointerdown', e => { drag = true; ba.setPointerCapture(e.pointerId); fromEvent(e); });
+  ba.addEventListener('pointermove', e => drag && fromEvent(e));
+  ba.addEventListener('pointerup', () => drag = false);
+  ba.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { set(pct-4); e.preventDefault(); }
+    if (e.key === 'ArrowRight'){ set(pct+4); e.preventDefault(); }
+  });
+});
+
+/* ---------- Testimonials ---------- */
+(() => {
+  const quotes = [...document.querySelectorAll('#testiStage .quote')];
+  const dotsWrap = document.getElementById('testiDots');
+  let i = 0, timer;
+  quotes.forEach((_,n) => {
+    const b = document.createElement('button');
+    b.setAttribute('role','tab'); b.setAttribute('aria-label',`Testimonial ${n+1}`);
+    b.addEventListener('click', () => { show(n); restart(); });
+    dotsWrap.appendChild(b);
+  });
+  const dots = [...dotsWrap.children];
+  function show(n){
+    i = n;
+    quotes.forEach((q,k)=>q.classList.toggle('on',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+  }
+  function restart(){ clearInterval(timer); if(!prefersReduced) timer = setInterval(()=>show((i+1)%quotes.length), 5200); }
+  show(0); restart();
+})();
+
+/* ---------- Booking form → WhatsApp ---------- */
+document.getElementById('bookForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, msg = document.getElementById('formMsg');
+  if (!f.name.value.trim() || !f.phone.value.trim()) {
+    msg.textContent = 'Please add your name and phone number so we can reach you.';
+    msg.style.color = '#B0743F'; msg.classList.add('show'); return;
+  }
+  const text = `Hello ${CONFIG.clinicName}! I'd like to book a consultation.%0A%0AName: ${encodeURIComponent(f.name.value)}%0APhone: ${encodeURIComponent(f.phone.value)}%0ATreatment: ${encodeURIComponent(f.treatment.value)}%0APreferred date: ${encodeURIComponent(f.date.value || 'Flexible')}%0ANote: ${encodeURIComponent(f.message.value || '—')}`;
+  if (CONFIG.whatsapp) {
+    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${text}`, '_blank');
+    msg.textContent = 'Opening WhatsApp… we look forward to seeing you.';
+  } else {
+    msg.textContent = `Thank you, ${f.name.value.split(' ')[0]} — request noted. (Demo mode: add the clinic's WhatsApp number in CONFIG to enable direct booking.)`;
+  }
+  msg.style.color = ''; msg.classList.add('show');
+});
+document.getElementById('yr').textContent = new Date().getFullYear();
+if (CONFIG.whatsapp) document.getElementById('floatWa').href = `https://wa.me/${CONFIG.whatsapp}`;
+
+/* ============================================================
+   3D LAYER — "Liquid Glow" orb (Three.js r128)
+   ============================================================ */
+(function init3D(){
+  const canvas = document.getElementById('glow');
+  let renderer;
+  try {
+    if (prefersReduced || !window.THREE) throw 0;
+    renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  } catch(_) { document.body.classList.add('no3d'); return; }
+
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 1.75));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, .1, 50);
+  camera.position.z = 7;
+
+  /* --- soft glow sprite behind orb --- */
+  function radialTexture(inner, outer){
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d');
+    const grd = g.createRadialGradient(128,128,0,128,128,128);
+    grd.addColorStop(0, inner); grd.addColorStop(1, outer);
+    g.fillStyle = grd; g.fillRect(0,0,256,256);
+    return new THREE.CanvasTexture(c);
+  }
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: radialTexture('rgba(231,207,197,0.95)','rgba(231,207,197,0)'),
+    transparent:true, depthWrite:false, opacity:.85
+  }));
+  glow.scale.set(7.5,7.5,1);
+
+  const glowGold = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: radialTexture('rgba(201,164,106,0.55)','rgba(201,164,106,0)'),
+    transparent:true, depthWrite:false, opacity:.7
+  }));
+  glowGold.scale.set(4.6,4.6,1);
+
+  /* --- iridescent glass orb (custom shader) --- */
+  const uniforms = {
+    uTime:{value:0}, uRipple:{value:0}, uAlpha:{value:1},
+    cBlush:{value:new THREE.Color('#E7CFC5')},
+    cGold:{value:new THREE.Color('#C9A46A')},
+    cSage:{value:new THREE.Color('#8FA79B')},
+    cPlum:{value:new THREE.Color('#3A2B2E')},
+  };
+  const orbMat = new THREE.ShaderMaterial({
+    uniforms, transparent:true, depthWrite:false,
+    vertexShader:`
+      uniform float uTime; uniform float uRipple;
+      varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      // cheap trig noise
+      float n3(vec3 p){ return sin(p.x*2.1+uTime)*sin(p.y*2.4+uTime*0.8)*sin(p.z*2.7+uTime*0.6); }
+      void main(){
+        vec3 pos = position;
+        float d = 0.055*n3(position*1.4) + uRipple*0.12*sin(10.0*position.y + uTime*6.0);
+        pos += normal * d;
+        vec4 mv = modelViewMatrix * vec4(pos,1.0);
+        vN = normalize(normalMatrix * normal);
+        vV = normalize(-mv.xyz);
+        vP = position;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader:`
+      uniform vec3 cBlush; uniform vec3 cGold; uniform vec3 cSage; uniform vec3 cPlum;
+      uniform float uTime; uniform float uAlpha;
+      varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      void main(){
+        float fres = pow(1.0 - max(dot(normalize(vN), normalize(vV)), 0.0), 2.0);
+        // iridescent band: blush -> gold -> sage sweeping with normal + time
+        float band = 0.5 + 0.5*sin(vP.y*2.2 + vP.x*1.4 + uTime*0.5);
+        vec3 iri = mix(cBlush, cGold, smoothstep(0.15,0.6,band));
+        iri = mix(iri, cSage, smoothstep(0.7,1.0,band)*0.65);
+        // glassy body: near-white centre, coloured rim
+        vec3 body = mix(vec3(1.0), iri, 0.35);
+        vec3 col = mix(body, iri, fres);
+        col += vec3(1.0,0.98,0.94) * pow(fres, 3.0) * 0.55;   // bright rim light
+        float alpha = (0.16 + fres*0.7) * uAlpha;
+        // faint plum shading on the underside for weight
+        col = mix(col, cPlum, smoothstep(-0.2,-1.0, normalize(vP).y) * 0.08);
+        gl_FragColor = vec4(col, alpha);
+      }`
+  });
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(1.55, isMobile?72:120, isMobile?72:120), orbMat);
+
+  // inner core for depth
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(1.0, 48, 48),
+    new THREE.MeshBasicMaterial({color:'#F6E7DD', transparent:true, opacity:.5, depthWrite:false})
+  );
+
+  const orbGroup = new THREE.Group();
+  orbGroup.add(glow, glowGold, core, orb);
+  scene.add(orbGroup);
+
+  /* --- rising light motes --- */
+  const COUNT = isMobile ? 220 : 460;
+  const pGeo = new THREE.BufferGeometry();
+  const pos = new Float32Array(COUNT*3), start = new Float32Array(COUNT*3), speed = new Float32Array(COUNT);
+  for (let i=0;i<COUNT;i++){
+    const r = 3 + Math.random()*6, a = Math.random()*Math.PI*2;
+    start[i*3]   = Math.cos(a)*r*(0.6+Math.random());
+    start[i*3+1] = (Math.random()-0.5)*9;
+    start[i*3+2] = -2 - Math.random()*4;
+    // entrance: begin scattered far out
+    pos[i*3]   = start[i*3]*3.5;
+    pos[i*3+1] = start[i*3+1]*3.5;
+    pos[i*3+2] = start[i*3+2]-6;
+    speed[i] = 0.15 + Math.random()*0.45;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const motes = new THREE.Points(pGeo, new THREE.PointsMaterial({
+    color:'#C9A46A', size: isMobile?0.045:0.05, transparent:true, opacity:.55,
+    map: radialTexture('rgba(255,244,224,1)','rgba(255,244,224,0)'),
+    depthWrite:false, blending:THREE.NormalBlending, sizeAttenuation:true
+  }));
+  scene.add(motes);
+
+  /* --- pointer parallax + ripple --- */
+  const mouse = {x:0,y:0,tx:0,ty:0};
+  let ripple = 0;
+  addEventListener('pointermove', e => {
+    const nx = (e.clientX/innerWidth)*2-1, ny = (e.clientY/innerHeight)*2-1;
+    ripple = Math.min(1, ripple + (Math.abs(nx-mouse.tx)+Math.abs(ny-mouse.ty))*2.2);
+    mouse.tx = nx; mouse.ty = ny;
+  }, {passive:true});
+  addEventListener('pointerdown', () => ripple = 1, {passive:true});
+  if (window.DeviceOrientationEvent && isMobile){
+    addEventListener('deviceorientation', e => {
+      if (e.gamma==null) return;
+      mouse.tx = Math.max(-1,Math.min(1,e.gamma/30));
+      mouse.ty = Math.max(-1,Math.min(1,(e.beta-45)/30));
+    }, {passive:true});
+  }
+
+  /* --- scroll choreography keyframes --- */
+  const S = id => document.getElementById(id);
+  const stops = () => ([
+    {y:0,                                   k:{x: isMobile?0:1.9, y:isMobile?0.9:0.1, s:1,   a:1}},   // hero: right of headline
+    {y:S('about').offsetTop,                k:{x: isMobile?-1.2:-2.4, y:0.2, s:0.55, a:0.85}},        // intro: drift left
+    {y:S('treatments').offsetTop,           k:{x: isMobile?1.1:2.9,  y:-0.4, s:0.34, a:0.6}},         // treatments: small accent
+    {y:S('results').offsetTop,              k:{x:0, y:2.4, s:0.28, a:0.35}},                          // results: recede up
+    {y:S('specialist').offsetTop,           k:{x: isMobile?0:-2.6, y:0.4, s:0.4, a:0.45}},            // team: ambient
+    {y:S('book').offsetTop,                 k:{x:0, y:isMobile?1.4:0.2, s:1.15, a:0.95}},             // booking: return, warm
+    {y:document.body.scrollHeight,          k:{x:0, y:0.4, s:1.15, a:0.9}},
+  ]);
+  let frames = stops();
+  addEventListener('resize', () => { frames = stops(); });
+
+  const lerp = (a,b,t)=>a+(b-a)*t;
+  function orbTarget(scroll){
+    const y = scroll + innerHeight*0.35;
+    for (let i=0;i<frames.length-1;i++){
+      const A=frames[i], B=frames[i+1];
+      if (y >= A.y && y < B.y){
+        const t = (y-A.y)/Math.max(1,(B.y-A.y));
+        const e = t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; // easeInOutQuad
+        return {x:lerp(A.k.x,B.k.x,e), y:lerp(A.k.y,B.k.y,e), s:lerp(A.k.s,B.k.s,e), a:lerp(A.k.a,B.k.a,e)};
+      }
+    }
+    const L = frames[frames.length-1].k; return {...L};
+  }
+
+  /* --- resize --- */
+  function resize(){
+    renderer.setSize(innerWidth, innerHeight);
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  resize(); addEventListener('resize', resize);
+
+  /* --- entrance state --- */
+  let born = 0; const bornStart = performance.now() + (prefersReduced?0:400);
+  orbGroup.scale.setScalar(0.001);
+
+  /* --- animate --- */
+  const clock = new THREE.Clock();
+  const cur = {x:0,y:0,s:0.001,a:1};
+  (function loop(){
+    requestAnimationFrame(loop);
+    const t = clock.getElapsedTime();
+    uniforms.uTime.value = t;
+
+    // entrance 0→1
+    if (born < 1){
+      born = Math.min(1, Math.max(0,(performance.now()-bornStart)/1600));
+    }
+    const bEase = 1-Math.pow(1-born,3);
+
+    // damped pointer follow
+    mouse.x = lerp(mouse.x, mouse.tx, 0.045);
+    mouse.y = lerp(mouse.y, mouse.ty, 0.045);
+    ripple = lerp(ripple, 0, 0.04);
+    uniforms.uRipple.value = ripple;
+
+    // scroll-driven target
+    const tgt = orbTarget(scrollY);
+    cur.x = lerp(cur.x, tgt.x + mouse.x*0.45, 0.06);
+    cur.y = lerp(cur.y, tgt.y - mouse.y*0.35, 0.06);
+    cur.s = lerp(cur.s, tgt.s*bEase, 0.06);
+    cur.a = lerp(cur.a, tgt.a, 0.06);
+
+    orbGroup.position.set(cur.x, cur.y, 0);
+    orbGroup.scale.setScalar(Math.max(0.001, cur.s));
+    uniforms.uAlpha.value = cur.a;
+    glow.material.opacity = 0.85*cur.a*(0.9+0.1*Math.sin(t*1.2));
+    glowGold.material.opacity = 0.7*cur.a*(0.85+0.15*Math.sin(t*0.9+1.7));
+    core.material.opacity = 0.5*cur.a;
+    orb.rotation.y = t*0.12; orb.rotation.x = Math.sin(t*0.2)*0.15;
+
+    // motes: converge on entrance, then drift upward + gentle pointer repel
+    const arr = pGeo.attributes.position.array;
+    const mx = mouse.x*4.2, my = -mouse.y*2.6;
+    for (let i=0;i<COUNT;i++){
+      const ix=i*3;
+      if (born < 1){
+        arr[ix]   = lerp(arr[ix],   start[ix],   0.05+0.03*bEase);
+        arr[ix+1] = lerp(arr[ix+1], start[ix+1], 0.05+0.03*bEase);
+        arr[ix+2] = lerp(arr[ix+2], start[ix+2], 0.05+0.03*bEase);
+      } else {
+        arr[ix+1] += speed[i]*0.008;
+        if (arr[ix+1] > 5.5) arr[ix+1] = -5.5;
+        const dx = arr[ix]-mx, dy = arr[ix+1]-my, d2 = dx*dx+dy*dy;
+        if (d2 < 2.2){ const f = (2.2-d2)*0.012; arr[ix]+=dx*f; arr[ix+1]+=dy*f; }
+        arr[ix] += Math.sin(t*0.4+i)*0.0009;
+      }
+    }
+    pGeo.attributes.position.needsUpdate = true;
+    motes.material.opacity = 0.55*Math.min(1, cur.a+0.15);
+
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+</body>
+</html>
