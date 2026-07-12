@@ -26,7 +26,7 @@ export function Testimonials() {
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {TESTIMONIALS.items.map((item, i) => (
             <Reveal key={item.author} delay={i * 0.1} className="h-full">
-              <TiltCard className="flex h-full flex-col border border-ivory/12 bg-espresso/55 p-9 backdrop-blur-xl">
+              <TiltCard className="flex h-full flex-col border border-ivory/12 bg-espresso/75 p-9 md:bg-espresso/55 md:backdrop-blur-xl">
                 <div aria-hidden className="text-sm tracking-[0.35em] text-gold">
                   ★★★★★
                 </div>

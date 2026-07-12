@@ -37,7 +37,7 @@ export function Philosophy() {
           {PHILOSOPHY.pillars.map((pillar) => (
             <div
               key={pillar.title}
-              className="group bg-espresso/35 p-9 backdrop-blur-xl transition-colors duration-700 hover:bg-espresso/20"
+              className="group bg-espresso/70 p-9 transition-colors duration-700 hover:bg-espresso/20 md:bg-espresso/35 md:backdrop-blur-xl"
             >
               <span className="block h-px w-8 bg-gold transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-14" />
               <h3 className="mt-7 font-[family-name:var(--font-display)] text-xl font-light text-ivory">

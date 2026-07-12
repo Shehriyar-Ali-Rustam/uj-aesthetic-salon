@@ -35,11 +35,12 @@ export function Experts() {
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {EXPERTS.people.map((person, i) => (
             <Reveal key={person.role} delay={i * 0.1}>
-              <TiltCard className="h-full border border-ivory/12 bg-espresso/55 backdrop-blur-xl">
+              <TiltCard className="h-full border border-ivory/12 bg-espresso/75 md:bg-espresso/55 md:backdrop-blur-xl">
                 {/* Portrait plate — the clinic still has to supply photography.
-                    This holds the exact 4:5 crop the images should be cut to;
-                    drop an <Image fill> in here and delete the placeholder. */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-espresso/40">
+                    Wider on a phone: three stacked 4:5 plates turn the section
+                    into an endless scroll. Drop an <Image fill> in here and
+                    delete the placeholder. */}
+                <div className="relative aspect-[3/2] overflow-hidden bg-espresso/40 md:aspect-[4/5]">
                   <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_10%,rgba(231,207,197,0.16),transparent)]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
                     <span

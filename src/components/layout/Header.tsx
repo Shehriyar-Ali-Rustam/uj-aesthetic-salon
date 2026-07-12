@@ -142,6 +142,31 @@ export function Header() {
                 </motion.div>
               ))}
             </nav>
+
+            {/* The desktop header's Book button is hidden at this width, so the
+                sheet has to carry it — otherwise the primary action on the whole
+                page is unreachable from the mobile menu. */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.06 * NAV_LINKS.length + 0.1,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-10"
+            >
+              <Link
+                href="#contact"
+                onClick={() => setMenuOpen(false)}
+                className="flex w-full items-center justify-center rounded-full bg-gold px-8 py-5 font-[family-name:var(--font-display)] text-[0.75rem] font-medium tracking-[0.18em] text-ivory uppercase shadow-[0_16px_40px_-16px_rgba(168,130,63,0.6)]"
+              >
+                Book Appointment
+              </Link>
+              <p className="mt-6 text-center text-sm text-mocha">
+                {CLINIC.tagline}
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger } from "@/animations/gsap";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useIsMobile, useReducedMotion } from "@/hooks/useMediaQuery";
+import { useSaveData } from "@/hooks/useSaveData";
 import { SECTION_CLIPS } from "@/lib/videos";
 import { smoothstep } from "@/lib/utils";
 
@@ -35,10 +36,26 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
 
   const isMobile = useIsMobile();
   const reduced = useReducedMotion();
+  const saveData = useSaveData();
 
-  /** Which clips have been given a src yet. Clip 1 loads immediately. */
+  /**
+   * On Save-Data or a 2G-class connection, the clips are never fetched at all —
+   * the poster frames stand in. 4MB of video is not worth it to someone paying
+   * per megabyte, and the page still reads exactly as designed.
+   */
+  const playbackDisabled = reduced || saveData;
+
+  /**
+   * No clip gets a `src` until we have mounted and know the viewport.
+   *
+   * This matters more than it looks: media queries do not resolve during SSR, so
+   * if the first clip carried a src in the server HTML it would always be the
+   * 1080p one — and a phone would start downloading it before hydration could
+   * swap in the 720p encode, paying for both. Posters paint instantly, so
+   * nothing is visibly lost by waiting a tick.
+   */
   const [loaded, setLoaded] = useState<boolean[]>(() =>
-    SECTION_CLIPS.map((_, i) => i === 0),
+    SECTION_CLIPS.map(() => false),
   );
 
   const requestLoad = useCallback((index: number) => {
@@ -49,6 +66,12 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
       return next;
     });
   }, []);
+
+  /** Clip 1 is the hero: fetch it as soon as we know which encode to fetch. */
+  useEffect(() => {
+    if (playbackDisabled) return;
+    requestLoad(0);
+  }, [playbackDisabled, requestLoad]);
 
   useIsomorphicLayoutEffect(() => {
     const container = containerRef.current;
@@ -86,7 +109,11 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
           const video = videoRefs.current[i];
           if (video) video.style.opacity = opacity.toFixed(3);
 
-          if (top !== undefined && scrollY > top - vh * (FADE_IN_START + PRELOAD_MARGIN)) {
+          if (
+            !playbackDisabled &&
+            top !== undefined &&
+            scrollY > top - vh * (FADE_IN_START + PRELOAD_MARGIN)
+          ) {
             requestLoad(i);
           }
         }
@@ -108,7 +135,10 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
             (o, j) => j > i && o > 0.995,
           );
           const shouldPlay =
-            inView && !reduced && opacities.current[i] > 0.002 && !covered;
+            inView &&
+            !playbackDisabled &&
+            opacities.current[i] > 0.002 &&
+            !covered;
 
           if (shouldPlay && video.paused) {
             void video.play().catch(() => {
@@ -140,7 +170,7 @@ export function CinematicJourney({ children }: { children: React.ReactNode }) {
     }, container);
 
     return () => ctx.revert();
-  }, [reduced, requestLoad]);
+  }, [playbackDisabled, requestLoad]);
 
   return (
     <div ref={containerRef} className="relative bg-espresso">

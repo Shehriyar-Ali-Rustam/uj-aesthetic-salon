@@ -122,3 +122,13 @@ time.
 
 **Reduced motion** is respected throughout: Lenis is not started, clips are not
 autoplayed (posters stand in), and reveals resolve instantly.
+
+**Mobile.** Phones get the 720p encodes, and no clip is given a `src` until the
+viewport is known — media queries do not resolve during SSR, so a src in the
+server HTML would always be the 1080p one and a phone would pay for both encodes.
+Backdrop blur is desktop-only (it is expensive on mobile GPUs); mobile card fills
+are opaque enough to carry legibility on their own. On Save-Data or a 2G-class
+connection the clips are never fetched at all — the posters stand in.
+
+Measured on a 390px viewport: **1.2MB to first paint, 6.0MB to scroll the whole
+page.**

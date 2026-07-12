@@ -79,7 +79,7 @@ export function Contact() {
           </div>
 
           <Reveal delay={0.1}>
-            <div className="rounded-3xl border border-ivory/12 bg-espresso/60 p-8 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl md:p-12">
+            <div className="rounded-3xl border border-ivory/12 bg-espresso/80 p-8 shadow-[0_40px_100px_-60px_rgba(0,0,0,0.7)] md:bg-espresso/60 md:backdrop-blur-2xl md:p-12">
               {sent ? (
                 <Confirmation
                   handedOff={Boolean(CLINIC.whatsapp)}
