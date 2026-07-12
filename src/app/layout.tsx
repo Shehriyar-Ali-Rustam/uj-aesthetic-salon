@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Preloader } from "@/components/layout/Preloader";
 import { CLINIC } from "@/lib/content";
+import { asset } from "@/lib/basePath";
 
 /**
  * Both faces are self-hosted variable fonts (latin subset, ~70KB together).
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
     title: `${CLINIC.name} — Advanced Aesthetic Care`,
     description: CLINIC.description,
     type: "website",
-    images: ["/posters/video1.jpg"],
+    images: [asset("/posters/video1.jpg")],
   },
 };
 

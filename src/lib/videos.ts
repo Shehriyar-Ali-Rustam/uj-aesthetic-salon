@@ -1,3 +1,5 @@
+import { asset } from "./basePath";
+
 /**
  * The five walkthrough clips.
  *
@@ -20,9 +22,9 @@ export interface Clip {
 
 export const CLIPS: Clip[] = [1, 2, 3, 4, 5].map((n) => ({
   id: n as ClipId,
-  src: `/videos/video${n}.mp4`,
-  mobileSrc: `/videos/video${n}-mobile.mp4`,
-  poster: `/posters/video${n}.jpg`,
+  src: asset(`/videos/video${n}.mp4`),
+  mobileSrc: asset(`/videos/video${n}-mobile.mp4`),
+  poster: asset(`/posters/video${n}.jpg`),
   alt: [
     "Walking into the reception of Uj's Aesthetics.",
     "Passing the softly lit treatment corridor.",
